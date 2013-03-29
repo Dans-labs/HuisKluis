@@ -1,16 +1,23 @@
 package me.gueret.huiskluis;
 
+import java.io.StringWriter;
 import java.util.logging.Logger;
 
 import me.gueret.huiskluis.datasources.DataSource;
 
-import org.restlet.data.Reference;
+import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.ext.rdf.Graph;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFWriter;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 /**
  * @author Christophe Gueret <christophe.gueret@gmail.com>
@@ -27,10 +34,7 @@ public class HuisResource extends ServerResource {
 	private String number = null;
 
 	// The graph that will contain the data about that resource
-	private Graph graph = new Graph();
-
-	// The name of the resource;
-	private Reference resource = null;
+	private Model model = ModelFactory.createDefaultModel();
 
 	/*
 	 * (non-Javadoc)
@@ -48,6 +52,10 @@ public class HuisResource extends ServerResource {
 		String houseNumber = parts[0];
 		String houseNumberToevoeging = (parts.length == 2 ? parts[1] : "");
 
+		// The name of the resource
+		Resource r = ResourceFactory.createResource(getRequest()
+				.getOriginalRef().toString());
+
 		// If no ID has been given, return a 404
 		if (postCode == null || houseNumber == null) {
 			setStatus(Status.CLIENT_ERROR_NOT_FOUND);
@@ -56,7 +64,7 @@ public class HuisResource extends ServerResource {
 
 		// Extend the graph with the data from the different sources
 		for (DataSource dataSource : ((Main) getApplication()).getDataSources())
-			dataSource.addDataFor(graph, postCode, houseNumber,
+			dataSource.addDataFor(model, r, postCode, houseNumber,
 					houseNumberToevoeging);
 
 	}
@@ -78,7 +86,12 @@ public class HuisResource extends ServerResource {
 	 */
 	@Get("html")
 	public Representation toHTML() {
-		return graph.getRdfXmlRepresentation();
+		StringWriter output = new StringWriter();
+		RDFWriter writer = model.getWriter("RDF/XML");
+		writer.write(model, output, "http://example.org");
+		StringRepresentation representation = new StringRepresentation(output
+				.getBuffer().toString(), MediaType.TEXT_XML);
+		return representation;
 	}
 
 	/**
@@ -88,7 +101,12 @@ public class HuisResource extends ServerResource {
 	 */
 	@Get("rdf")
 	public Representation toRDFXML() {
-		return graph.getRdfXmlRepresentation();
+		StringWriter output = new StringWriter();
+		RDFWriter writer = model.getWriter("RDF/XML");
+		writer.write(model, output, "http://example.org");
+		StringRepresentation representation = new StringRepresentation(output
+				.getBuffer().toString(), MediaType.TEXT_XML);
+		return representation;
 	}
 
 }
