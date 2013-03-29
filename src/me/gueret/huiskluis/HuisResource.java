@@ -2,6 +2,8 @@ package me.gueret.huiskluis;
 
 import java.util.logging.Logger;
 
+import me.gueret.huiskluis.datasources.DataSource;
+
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.rdf.Graph;
@@ -22,7 +24,7 @@ public class HuisResource extends ServerResource {
 	private String postCode = null;
 
 	// The number of the house, with eventual addition
-	private String houseNumber = null;
+	private String number = null;
 
 	// The graph that will contain the data about that resource
 	private Graph graph = new Graph();
@@ -39,7 +41,12 @@ public class HuisResource extends ServerResource {
 	protected void doInit() throws ResourceException {
 		// Get the dataset name from the URI template
 		postCode = (String) getRequest().getAttributes().get("POSTCODE");
-		houseNumber = (String) getRequest().getAttributes().get("NUMBER");
+		number = (String) getRequest().getAttributes().get("NUMBER");
+
+		// Split the house number
+		String[] parts = number.split("-");
+		String houseNumber = parts[0];
+		String houseNumberToevoeging = (parts.length == 2 ? parts[1] : "");
 
 		// If no ID has been given, return a 404
 		if (postCode == null || houseNumber == null) {
@@ -47,8 +54,10 @@ public class HuisResource extends ServerResource {
 			setExisting(false);
 		}
 
-		BAGClient bagClient = new BAGClient(graph);
-		bagClient.addDataFor(postCode, houseNumber);
+		// Extend the graph with the data from the different sources
+		for (DataSource dataSource : ((Main) getApplication()).getDataSources())
+			dataSource.addDataFor(graph, postCode, houseNumber,
+					houseNumberToevoeging);
 
 	}
 

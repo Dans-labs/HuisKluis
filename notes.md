@@ -16,3 +16,10 @@ SELECT * WHERE {
   ?pand <http://data.resc.info/bag/resource/vocab/pandactueel_bouwjaar> ?b.
 } LIMIT 10
 ```
+
+# Data sources
+BAG : http://lod.geodan.nl/BAG/
+TOP10 : http://plod.nieuwland.nl/top10nl/
+
+http://ep-online.nl/EnergieLabel.aspx
+(example 9415RD, 2)

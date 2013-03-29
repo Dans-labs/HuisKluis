@@ -1,0 +1,15 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX vocab: <http://lod.geodan.nl/BAG/vocab/resource/>
+SELECT ?straat ?bouwjaar WHERE {
+	?huis vocab:nummeraanduiding_postcode "1055HB"^^xsd:string.
+	?huis vocab:nummeraanduiding_huisnummer "20"^^xsd:string.
+	?huis vocab:nummeraanduiding_huisnummertoevoeging "3"^^xsd:string.
+	?huis vocab:openbareruimte ?obruimte.
+	?obruimte vocab:openbareruimte_naam ?straat.
+	?obj vocab:nummeraanduiding ?huis.
+	?pand vocab:verblijfsobject ?obj.
+	?pand vocab:pand_bouwjaar ?bouwjaar.
+} LIMIT 10
+

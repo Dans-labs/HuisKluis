@@ -1,6 +1,12 @@
 package me.gueret.huiskluis;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
+
+import me.gueret.huiskluis.datasources.BAGClient;
+import me.gueret.huiskluis.datasources.DataSource;
 
 import org.restlet.Application;
 import org.restlet.Component;
@@ -16,12 +22,18 @@ public class Main extends Application {
 	// Logger
 	protected static final Logger logger = Logger.getLogger(Main.class.getName());
 
+	// List of data sources
+	private Map<String, DataSource> dataSources = new HashMap<String, DataSource>();
+	
 	/**
 	 * Creates a root Restlet that will receive all incoming calls and route
 	 * them to the corresponding handlers
 	 */
 	@Override
 	public Restlet createInboundRoot() {
+		// Create the data sources
+		dataSources.put("BAG", new BAGClient(getContext()));
+		
 		// Create the router
 		Router router = new Router(getContext());
 
@@ -39,19 +51,19 @@ public class Main extends Application {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		// Create the HTTP server and listen on port 8182
-		// Server server = new Server(Protocol.HTTP, 8182);
-		// Application a = new Main();
-		// a.setContext(server.getContext());
-		// a.start();
-		// System.out.println(a.getContext());
-
 		Component component = new Component();
 		component.getClients().add(Protocol.WAR);
 		component.getServers().add(Protocol.HTTP, 8080);
 		component.getDefaultHost().attach(new Main());
 		component.start();
+	}
 
+
+	/**
+	 * @return
+	 */
+	public Collection<DataSource> getDataSources() {
+		return dataSources.values();
 	}
 
 }
