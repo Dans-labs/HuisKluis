@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import me.gueret.huiskluis.datasources.BAGClient;
+import me.gueret.huiskluis.datasources.DataSourceBAG;
 import me.gueret.huiskluis.datasources.DataSource;
 
 import org.restlet.Application;
@@ -32,7 +32,7 @@ public class Main extends Application {
 	@Override
 	public Restlet createInboundRoot() {
 		// Create the data sources
-		dataSources.put("BAG", new BAGClient(getContext()));
+		dataSources.put("BAG", new DataSourceBAG(getContext()));
 		
 		// Create the router
 		Router router = new Router(getContext());
