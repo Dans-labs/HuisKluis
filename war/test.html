@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bootstrap 101 Template</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</head>
+<body>
+	<script>
+		var poly = "POLYGON((6.22061023861632 52.139301440486,6.22064284868403 52.1392156407334,6.22078158872773 52.1392356027973,6.220749744825 52.1393193927671,6.22084400100517 52.1393329549354,6.22083132992842 52.1393662745144,6.22071072590093 52.1393490785497,6.22072268672094 52.1393176156085,6.22061023861632 52.139301440486))";
+		var regex = /(\d\.[^ ]*) (\d\d\.[^,)]*)/g;
+		var points = [];
+		while (match = regex.exec(poly)) {
+			var point = [];
+			point.push(match[2]);
+			point.push(match[1]);
+			points.push(point);
+		}
+		
+	</script>
+</body>
+</html>
+
+
+

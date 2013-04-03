@@ -23,3 +23,7 @@ TOP10 : http://plod.nieuwland.nl/top10nl/
 
 http://ep-online.nl/EnergieLabel.aspx
 (example 9415RD, 2)
+
+http://geodata.nationaalgeoregister.nl/geocoder/Geocoder?zoekterm=Amsterdam+Trouringhstraat+20+1055HB
+
+

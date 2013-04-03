@@ -86,7 +86,9 @@ public class DataSourceBAG extends DataSource {
 			// Add the polygon
 			p = ResourceFactory
 					.createProperty("http://www.example.org#polygon");
-			model.add(r, p, result.get("polygon"));
+			Literal poly = ResourceFactory.createPlainLiteral(result.get(
+					"polygon").toString());
+			model.add(r, p, poly);
 
 		}
 
