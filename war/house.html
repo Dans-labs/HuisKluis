@@ -19,26 +19,48 @@
 	<div class="container">
 		<!-- Main hero unit for a primary marketing message or call to action -->
 		<div class="hero-unit">
-			<h1>Welcome !</h1>
-			<p>Enter your house postcode and number and press "Go"</p>
-			<form class="form-inline" action="house.html" method="get">
-				<input name="postcode" type="text" class="input-small" placeholder="postcode">
-				<input name="number" type="text" class="input-small" placeholder="number">
-				<button type="submit" class="btn btn-primary">Go!</button>
-			</form>
-			<p>You can also go to the following examples:</p>
-			<ul>
-				<li><a href="house.html?postcode=1055HB&number=20-3">A house (1055HB
-						20-3)</a></li>
-				<li><a href="house.html?postcode=7231JT&number=24">Another house (7231JT
-						24)</a></li>
-				<li><a href="house.html?postcode=1081HV&number=1105">The main building of the VU University Amsterdam (1081HV
-						1105)</a></li>
-						
-						 
-			</ul>
+			<h1>House information</h1>
+			<p>Here are some information about the house fetched from
+				different sources</p>
+			<p>
+				<a href="#" class="btn btn-primary" id="rdflink">Get
+					the RDF data &raquo;</a>
+			</p>
 		</div>
 
+		<!-- Example row of columns -->
+		<div class="row">
+			<div class="span4">
+				<h2>Location and contour</h2>
+				<em>Data from the BAG</em>
+				<div id="map" class="map"></div>
+			</div>
+			<div class="span4">
+				<h2>Building information</h2>
+				<em>Data from the BAG</em>
+				<br/><br/>
+				<table class="table">
+					<tr>
+						<td><p>Construction year &raquo;</p></td>
+						<td id="bouwjaar"></td>
+					</tr>
+					<tr>
+						<td><p>Street name &raquo;</p></td>
+						<td id="straat"></td>
+					</tr>
+				</table>
+			</div>
+			<div class="span4">
+				<h2>Energy label</h2>
+				<em>Not yet available</em>
+			</div>
+		</div>
+
+		<hr>
+
+		<footer>
+			<p>&copy; PiLOD 2013</p>
+		</footer>
 
 	</div>
 	<!-- /container -->

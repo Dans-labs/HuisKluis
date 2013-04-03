@@ -56,18 +56,58 @@ function go(xml) {
 			color : 'red'
 		}).addTo(map);
 	});
+	
+	// Get the construction year and the street name
+	cstr_prop = $.rdf.resource('pilod:construction', {
+		namespaces : ns
+	});
+	street_prop = $.rdf.resource('pilod:street', {
+		namespaces : ns
+	});
+	r = s.where("?s " + cstr_prop + " ?cstr").where("?s " + street_prop + " ?street")
+	.each(function() {
+		cstr = this.cstr.value;
+		street = this.street.value;
+		$("<p/>").text(cstr).appendTo("#bouwjaar");
+		$("<p/>").text(street).appendTo("#straat");
+	});
+	
 }
 
-$().ready(function() {
-	// Configure Ajax queries
-	$.ajaxSetup({
-		datatype : "xml"
-	});
+// Code from
+// http://jquerybyexample.blogspot.com/2012/06/get-url-parameters-using-jquery.html
+function GetURLParameter(sParam) {
+	var sPageURL = window.location.search.substring(1);
+	var sURLVariables = sPageURL.split('&');
+	for ( var i = 0; i < sURLVariables.length; i++) {
+		var sParameterName = sURLVariables[i].split('=');
+		if (sParameterName[0] == sParam)
+			return sParameterName[1];
+	}
+	;
+}
 
-	$.ajax({
-		url : "http://localhost:8888/data/1055HB/20-3",
-		success : function(xml) {
-			go(xml);
-		},
-	});
-});
+$().ready(
+		function() {
+			// Configure Ajax queries
+			$.ajaxSetup({
+				datatype : "xml"
+			});
+
+			// Get the parameters for the house
+			var postCode = GetURLParameter('postcode');
+			var number = GetURLParameter('number');
+
+			// Compose the URL for the data
+			var data_url = "http://" + window.location.host + "/data/"
+					+ postCode + "/" + number;
+			$('#rdflink').attr('href',data_url);
+			
+			// Load the data
+			$.ajax({
+				url : data_url,
+				success : function(xml) {
+					go(xml);
+				},
+			});
+		});
