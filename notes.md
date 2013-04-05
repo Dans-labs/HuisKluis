@@ -26,4 +26,3 @@ http://ep-online.nl/EnergieLabel.aspx
 
 http://geodata.nationaalgeoregister.nl/geocoder/Geocoder?zoekterm=Amsterdam+Trouringhstraat+20+1055HB
 
-

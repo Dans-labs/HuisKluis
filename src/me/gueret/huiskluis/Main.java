@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import me.gueret.huiskluis.datasources.DataSourceBAG;
 import me.gueret.huiskluis.datasources.DataSource;
+import me.gueret.huiskluis.datasources.DataSourceEPBD;
 
 import org.restlet.Application;
 import org.restlet.Component;
@@ -33,13 +34,14 @@ public class Main extends Application {
 	public Restlet createInboundRoot() {
 		// Create the data sources
 		dataSources.put("BAG", new DataSourceBAG(getContext()));
+		dataSources.put("EPBD", new DataSourceEPBD(getContext()));
 		
 		// Create the router
 		Router router = new Router(getContext());
 
 		// Handler for requests to parameters setting
 		router.attach("/data/{POSTCODE}/{NUMBER}", HuisResource.class);
-
+		
 		// Activate content filtering based on extensions
 		getTunnelService().setExtensionsTunnel(true);
 
