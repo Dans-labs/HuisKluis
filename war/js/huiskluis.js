@@ -50,7 +50,7 @@ function disconnectUser() {
 	var token = gapi.auth.getToken();
 	var revokeUrl = 'https://accounts.google.com/o/oauth2/revoke?token='
 			+ token['access_token'];
-	
+
 	// Perform an asynchronous GET request.
 	$.ajax({
 		type : 'GET',
@@ -153,6 +153,14 @@ function loadHouse(postCode, number) {
 	// Fill in the form
 	$('#postcode').attr('placeholder', postCode);
 	$('#number').attr('placeholder', number);
+
+	// Add an history entry
+	var stateObj = {
+		postCode : postCode,
+		number : number
+	};
+	history.pushState(stateObj, postCode + ", " + number,
+			"index.html?postcode=" + postCode + "&number=" + number);
 
 	// Hide the default header
 	$('#welcome').hide();
