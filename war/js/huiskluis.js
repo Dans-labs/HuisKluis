@@ -155,12 +155,12 @@ function loadHouse(postCode, number) {
 	$('#number').attr('placeholder', number);
 
 	// Add an history entry
-	var stateObj = {
-		postCode : postCode,
-		number : number
-	};
-	history.pushState(stateObj, postCode + ", " + number,
-			"index.html?postcode=" + postCode + "&number=" + number);
+	//var stateObj = {
+	//	postCode : postCode,
+	//	number : number
+	//};
+	//history.pushState(stateObj, postCode + ", " + number,
+	//		"index.html?postcode=" + postCode + "&number=" + number);
 
 	// Hide the default header
 	$('#welcome').hide();
@@ -185,6 +185,10 @@ function loadHouse(postCode, number) {
 
 			// Process the house data
 			processHouseData(xml);
+		},
+		error : function() {
+			$('#progress').hide();
+			$('#error').show();
 		},
 	});
 

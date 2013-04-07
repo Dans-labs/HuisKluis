@@ -2,12 +2,11 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX vocab: <http://data.resc.info/bag/resource/vocab/>
-PREFIX ogc: <http://lod.geodan.nl/geosparql_vocab_all.rdf#>
 
 SELECT ?straat ?bouwjaar ?lat ?lng ?polygon WHERE {
-  ?huis <http://www.w3.org/ns/locn#postCode> "1055HB".
-  ?huis <http://www.w3.org/ns/locn#locatorDesignator> "20"^^xsd:decimal.
-  ?huis <http://www.w3.org/ns/locn#locatorDesignator> "3".
+  ?huis <http://www.w3.org/ns/locn#postCode> "{POSTCODE}".
+  ?huis <http://www.w3.org/ns/locn#locatorDesignator> "{NUMMER}"^^xsd:decimal.
+  {TOEVOEGING}
   ?huis <http://www.w3.org/ns/locn#thoroughfare> ?straat.
   ?huis <http://www.w3.org/2006/vcard/ns#longitude> ?lng.
   ?huis <http://www.w3.org/2006/vcard/ns#latitude> ?lat.

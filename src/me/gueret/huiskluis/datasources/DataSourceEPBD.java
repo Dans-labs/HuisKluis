@@ -1,7 +1,5 @@
 package me.gueret.huiskluis.datasources;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import org.restlet.Context;
 import org.restlet.Request;
