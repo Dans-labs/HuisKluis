@@ -9,26 +9,44 @@ var ns = {
 	pilod : 'http://www.example.org#'
 }
 
-// Token
-var token = null;
+// E-mail of logged in user
+var user_email = null;
+
+// E-mail for the displayed house owner
+var owner_email = null;
+
+// Confidential comment about the house
+var description = null;
+
+// The current house post code and number
+var postCode = null;
+var number = null;
+
+// A pointer to the map
+var map = null;
 
 function getEmailCallback(obj) {
+	// Prepare the text for the log out button
 	var email = '';
 	if (obj['email']) {
 		email = 'Log out ' + obj['email'];
 	}
+
+	// Show the log out
 	$("#logoutButton").text(email);
 	$("#logoutButton").show();
+
+	user_email = obj['email'];
+
+	// Update the private section
+	updatePrivateSection();
 }
 
 function signinCallback(authResult) {
 	if (authResult['access_token']) {
 		// Successfully authorized
 
-		// Save the token
-		token = gapi.auth.getToken();
-
-		// Hide the button
+		// Hide the sign in button
 		$("#signinButton").hide();
 
 		// Load the oauth2 libraries to enable the userinfo methods.
@@ -39,10 +57,7 @@ function signinCallback(authResult) {
 
 	} else if (authResult['error']) {
 		// There was an error.
-		// Possible error codes:
-		// "access_denied" - User denied access to your app
-		// "immediate_failed" - Could not automatially log in the user
-		// console.log('There was an error: ' + authResult['error']);
+		user_email = "";
 	}
 }
 
@@ -60,7 +75,10 @@ function disconnectUser() {
 		dataType : 'jsonp',
 		success : function(nullResponse) {
 			$("#logoutButton").hide();
+			user_email = "";
+			updatePrivateSection();
 			$("#signinButton").show();
+
 		},
 		error : function(e) {
 			// Handle the error
@@ -75,15 +93,6 @@ function processHouseData(xml) {
 	// Create the triple store
 	s = $.rdf();
 	s.databank.load(xml);
-
-	// Create the map
-	var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-	var osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-	var osm = L.tileLayer(osmUrl, {
-		maxZoom : 18,
-		attribution : osmAttrib
-	});
-	var map = L.map('map').addLayer(osm);
 
 	// Get the latitude and longitude of the house
 	lat_prop = $.rdf.resource('wgs84:lat', {
@@ -120,6 +129,8 @@ function processHouseData(xml) {
 	});
 
 	// Get the construction year and the street name
+	$("#bouwjaar").empty();
+	$("#straat").empty();
 	cstr_prop = $.rdf.resource('pilod:construction', {
 		namespaces : ns
 	});
@@ -134,6 +145,112 @@ function processHouseData(xml) {
 		$("<p/>").text(street).appendTo("#straat");
 	});
 
+	// Get the mail of the house owner
+	claim_prop = $.rdf.resource('pilod:claimedBy', {
+		namespaces : ns
+	});
+	r = s.where("?s " + claim_prop + " ?owner").each(function() {
+		owner_email = this.owner.value;
+	});
+
+	// Get the confidential comment about the house
+	description_prop = $.rdf.resource('pilod:description', {
+		namespaces : ns
+	});
+	r = s.where("?s " + description_prop + " ?description").each(function() {
+		description = this.description.value;
+	});
+
+	// Update controls for the private section
+	updatePrivateSection();
+}
+
+/**
+ * 
+ */
+function updatePrivateSection() {
+	$("#private-div").empty();
+
+	// Users have to log in to continue with this section
+	if (user_email == "") {
+		dlgdiv = $("<div/>")
+				.attr("class", "alert alert-info")
+				.text(
+						"Please log in with your Google+ account to diplay the content of this section");
+		$("<button/>").attr("class", "close").attr("data-dismiss", "alert")
+				.text("x").appendTo(dlgdiv);
+		dlgdiv.appendTo("#private-div");
+		return;
+	}
+
+	if (owner_email == "NONE") {
+		// There is no owner for this house, show the claim button
+		btn = $("<button/>").attr("class", "btn btn-info").attr("type",
+				"button").text("Claim this house");
+		btn.click(function() {
+			url = "http://" + window.location.host + "/claim/" + postCode + "/"
+					+ number + "?email=" + user_email;
+			btn.hide();
+			// Send a claim request
+			$.ajax({
+				method : "PUT",
+				url : url,
+				success : function() {
+					loadHouse();
+					updatePrivateSection();
+				}
+			});
+		});
+		btn.appendTo("#private-div");
+	} else {
+		if (owner_email == user_email) {
+			// The user of this house is logged in, show the private data
+			dlgdiv = $("<div/>")
+					.attr("class", "alert alert-info")
+					.text(
+							"Hello! You claimed this house, feel free to add some confidential information about it");
+			$("<button/>").attr("class", "close").attr("data-dismiss", "alert")
+					.text("x").appendTo(dlgdiv);
+			dlgdiv.appendTo("#private-div");
+			
+			var txtarea = $("<textarea/>").attr("rows", 3).attr("id",
+					"description").val("");
+			if (description != "NONE")
+				txtarea.val(description);
+			txtarea.appendTo("#private-div");
+			txtarea.change(function () {
+				$("#saveButton").removeAttr('disabled');		
+			});
+			$("<br/>").appendTo("#private-div");
+			var saveBtn = $("<button/>").attr("class", "btn btn-primary btn-mini")
+					.attr("type", "button").attr("id", "saveButton").text("Save changes");
+			saveBtn.click(function() {
+				url = "http://" + window.location.host + "/claim/" + postCode
+						+ "/" + number + "?description="
+						+ $("#description").val();
+				// Send a new description
+				$.ajax({
+					method : "PUT",
+					url : url,
+					success : function() {
+						saveBtn.attr("disabled", "disabled");
+					}
+				});
+			});
+			saveBtn.appendTo("#private-div");
+			
+		} else {
+			// The user logged in is not the one who claimed this house
+			dlgdiv = $("<div/>")
+					.attr("class", "alert alert-error")
+					.text(
+							owner_email
+									+ " claimed this house, you do not have access to the private data.");
+			$("<button/>").attr("class", "close").attr("data-dismiss", "alert")
+					.text("x").appendTo(dlgdiv);
+			dlgdiv.appendTo("#private-div");
+		}
+	}
 }
 
 // Code from
@@ -149,18 +266,24 @@ function GetURLParameter(sParam) {
 	;
 }
 
-function loadHouse(postCode, number) {
+function loadHouse() {
+	// We need to wait for the authentication first
+	if (user_email == null) {
+		setTimeout(loadHouse, 250, postCode, number);
+		return;
+	}
+
 	// Fill in the form
-	$('#postcode').attr('placeholder', postCode);
-	$('#number').attr('placeholder', number);
+	$('#postcode').attr('placeholder', postCode).val(postCode);
+	$('#number').attr('placeholder', number).val(number);
 
 	// Add an history entry
-	//var stateObj = {
-	//	postCode : postCode,
-	//	number : number
-	//};
-	//history.pushState(stateObj, postCode + ", " + number,
-	//		"index.html?postcode=" + postCode + "&number=" + number);
+	// var stateObj = {
+	// postCode : postCode,
+	// number : number
+	// };
+	// history.pushState(stateObj, postCode + ", " + number,
+	// "index.html?postcode=" + postCode + "&number=" + number);
 
 	// Hide the default header
 	$('#welcome').hide();
@@ -172,6 +295,9 @@ function loadHouse(postCode, number) {
 	var data_url = "http://" + window.location.host + "/data/" + postCode + "/"
 			+ number;
 	$('#rdflink').attr('href', data_url);
+
+	if (user_email != "")
+		data_url = data_url + "?email=" + user_email;
 
 	// Load the data
 	$.ajax({
@@ -191,7 +317,6 @@ function loadHouse(postCode, number) {
 			$('#error').show();
 		},
 	});
-
 }
 
 function init() {
@@ -200,13 +325,22 @@ function init() {
 		datatype : "xml"
 	});
 
+	// Create the map
+	var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+	var osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+	var osm = L.tileLayer(osmUrl, {
+		maxZoom : 18,
+		attribution : osmAttrib
+	});
+	map = L.map('map').addLayer(osm);
+
 	// Get the parameters for the house
-	var postCode = GetURLParameter('postcode');
-	var number = GetURLParameter('number');
+	postCode = GetURLParameter('postcode');
+	number = GetURLParameter('number');
 
 	if (postCode != null && number != null) {
 		// If we get valid data, load it
-		loadHouse(postCode, number);
+		loadHouse();
 	}
 
 }

@@ -6,7 +6,6 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="css/bootstrap.css" />
 <link rel="stylesheet" href="css/bootstrap-responsive.css" />
-<link rel="stylesheet" href="css/leaflet.css" />
 <link rel="stylesheet" href="css/huiskluis.css" />
 <link rel="stylesheet"
 	href="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.css" />
@@ -93,19 +92,23 @@
 					</div>
 					<!-- Error box -->
 					<div id="error" class="alert alert-error"
-						style="display: none; width: 80%">
-						Sorry, the server took too long to respond. Try again later
-					</div>
+						style="display: none; width: 80%">Sorry, the server took too
+						long to respond. Try again later</div>
 					<!-- Information panel showed when some data is loaded -->
 					<div id="house" style="display: none;">
 						<h1>
-							Information available for this building <a href="#"
+							Information available for this house <a href="#"
 								style="margin-top: 10px" class="btn btn-primary pull-right"
 								id="rdflink">Get the RDF data</a>
 						</h1>
 						<div class="boxed-public">
+							<p class="muted">This section contains a collection of open
+								data relevant for this house. The data has been harvested from
+								different locations and put together as one data set. To see
+								this data as RDF, click on the blue button on the upper right
+								corner.</p>
 							<div class="pull-left">
-								<table class="table">
+								<table class="table table-bordered">
 									<tr>
 										<td><p>Construction year</p></td>
 										<td id="bouwjaar"></td>
@@ -120,7 +123,11 @@
 							<div class="clearfix"></div>
 						</div>
 						<div class="boxed-private">
-							Place holder
+							<p class="muted">This section contains restricted data
+								relevant for this house. The access to this data is restricted
+								to the person who claimed the location and the applications this
+								persons has granted access to.</p>
+							<div class="pull-left" id="private-div"></div>
 							<div class="clearfix"></div>
 						</div>
 					</div>

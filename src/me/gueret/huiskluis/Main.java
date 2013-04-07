@@ -41,6 +41,9 @@ public class Main extends Application {
 		// Handler for requests to parameters setting
 		router.attach("/data/{POSTCODE}/{NUMBER}", HuisResource.class);
 		
+		// Handler for ownership claims
+		router.attach("/claim/{POSTCODE}/{NUMBER}", ClaimResource.class);
+		
 		// Activate content filtering based on extensions
 		getTunnelService().setExtensionsTunnel(true);
 

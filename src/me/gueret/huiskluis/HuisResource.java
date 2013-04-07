@@ -4,6 +4,7 @@ import java.io.StringWriter;
 import java.util.logging.Logger;
 
 import me.gueret.huiskluis.datasources.DataSource;
+import me.gueret.huiskluis.restricted.RestrictedData;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
@@ -15,6 +16,7 @@ import org.restlet.resource.ServerResource;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
@@ -62,11 +64,33 @@ public class HuisResource extends ServerResource {
 			setExisting(false);
 		}
 
-		// Extend the graph with the data from the different sources
+		// Extend the graph with the data from the different public sources
 		for (DataSource dataSource : ((Main) getApplication()).getDataSources())
 			dataSource.addDataFor(model, r, postCode, houseNumber,
 					houseNumberToevoeging);
 
+		// Checked if there is a user logged in
+		String loggedInUser = getQuery().getFirstValue("email");
+		if (loggedInUser != null) {
+			RestrictedData restrictedData = new RestrictedData();
+
+			// Add name of owner
+			String owner = restrictedData.get(postCode, number, RestrictedData.OWNER);
+			if (owner == null || owner.equals(""))
+				owner = "NONE";
+			Property p = ResourceFactory
+					.createProperty("http://www.example.org#claimedBy");
+			model.add(r, p, ResourceFactory.createPlainLiteral(owner));
+
+			// If the owner is the person logged in, add the confidential
+			// comment
+			String text = restrictedData.get(postCode, number,  RestrictedData.DESCRIPTION);
+			if (text == null || text.equals(""))
+				text = "NONE";
+			p = ResourceFactory
+					.createProperty("http://www.example.org#description");
+			model.add(r, p, ResourceFactory.createPlainLiteral(text));
+		}
 	}
 
 	/*
@@ -80,27 +104,12 @@ public class HuisResource extends ServerResource {
 	}
 
 	/**
-	 * Returns an HTML representation of the resource
-	 * 
-	 * @return an HTML representation of the resource
-	 */
-	@Get("html")
-	public Representation toHTML() {
-		StringWriter output = new StringWriter();
-		RDFWriter writer = model.getWriter("RDF/XML");
-		writer.write(model, output, "http://example.org");
-		StringRepresentation representation = new StringRepresentation(output
-				.getBuffer().toString(), MediaType.TEXT_XML);
-		return representation;
-	}
-
-	/**
 	 * Returns an RDF/XML representation of the resource
 	 * 
 	 * @return an RDF/XML representation of the resource
 	 */
-	@Get("rdf")
-	public Representation toRDFXML() {
+	@Get
+	public Representation getRDF() {
 		StringWriter output = new StringWriter();
 		RDFWriter writer = model.getWriter("RDF/XML");
 		writer.write(model, output, "http://example.org");
