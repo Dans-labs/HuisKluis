@@ -26,3 +26,6 @@ http://ep-online.nl/EnergieLabel.aspx
 
 http://geodata.nationaalgeoregister.nl/geocoder/Geocoder?zoekterm=Amsterdam+Trouringhstraat+20+1055HB
 
+# Weird thing with the Churches
+http://pilod-huiskluis.appspot.com/?postcode=1012AD&number=73
+
