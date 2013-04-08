@@ -47,8 +47,10 @@ public class HuisResource extends ServerResource {
 	protected void doInit() throws ResourceException {
 		// Get the dataset name from the URI template
 		postCode = (String) getRequest().getAttributes().get("POSTCODE");
+		postCode = postCode.toUpperCase().replace(" ", "").replace("+", "");
 		number = (String) getRequest().getAttributes().get("NUMBER");
-
+		number = number.toUpperCase().replace(" ", "").replace("+", "");
+		
 		// Split the house number
 		String[] parts = number.split("-");
 		String houseNumber = parts[0];
