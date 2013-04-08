@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HuisKluis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="css/bootstrap.css" />
+<link rel="stylesheet" href="css/bootstrap-responsive.css" />
+<link rel="stylesheet" href="css/huiskluis.css" />
+<link rel="stylesheet"
+	href="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.css" />
+<!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.ie.css" />
+<![endif]-->
+</head>
+<body>
+	<!-- Menu bar -->
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+
+				<!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+				<a class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse"> <span class="icon-bar"></span> <span
+					class="icon-bar"></span> <span class="icon-bar"></span>
+				</a>
+
+				<!-- Branding -->
+				<a class="brand" href="/">HuisKluis<sup>0.1</sup>
+				</a>
+				<ul class="nav">
+					<li><a href="/">Home</a></li>
+					<li class="active"><a href="about.html">About</a></li>
+				</ul>
+
+				<!-- Everything that will be collapsed on small screens -->
+				<div class="nav-collapse collapse">
+					<form class="navbar-form pull-left">
+						<input id="postcode" name="postcode" type="text"
+							class="input-small" placeholder="postcode" /> <input id="number"
+							name="number" type="text" class="input-small"
+							placeholder="number" />
+						<button type="submit" class="btn btn-primary">Go!</button>
+					</form>
+					<span style="padding-top: 4px; margin: 0px; line-height: 0px;"
+						id="signinButton" class="pull-right"> <span
+						class="g-signin" data-callback="signinCallback"
+						data-clientid="413533605905.apps.googleusercontent.com"
+						data-cookiepolicy="single_host_origin" data-width="wide"
+						data-scope="https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email">
+					</span>
+					</span> <a id="logoutButton" class="btn btn-success pull-right"
+						style="display: none;" onclick="javascript:disconnectUser()">Log
+						out</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<br />
+	<br />
+	<br />
+
+	<!-- Main container -->
+	<div class="container">
+		<div class="row">
+			<div class="span12">
+				<div class="well">
+					<div class="page-header">
+						<h1>About the HuisKluis ("House safe")</h1>
+					</div>
+					<h2>What is it exactly ?</h2>
+					<p>The government of the Netherlands has a lot of data about
+						the citizens and basic infrastructure which are contained in
+						so-called basic registers. Through an open data policy, the
+						content of these registers is becoming available to the citizens
+						but having the data open does not implies that it becomes
+						accessible right away. Those willing to use that data have to go
+						to different places to grab it and perform some data integration
+						on their own.</p>
+					<p>
+						On the other hand, citizens have data that could be useful to the
+						government, or city related services, and which is not available.
+						Let us consider, for instance, the case of a fire in a home. The
+						fire brigade in charge of dealing with the incident would make a
+						great use of some detailed information about the house (<em>e.g.</em>
+						the location of the valuables, the list of sleeping rooms, the
+						presence of toxic materials) to better focus their efforts. This
+						data is not open and should not be so to prevent its misuse, still
+						it would be good to make it available within a given set of
+						trusted parties
+					</p>
+					<p>The "HuisKluis" is a concept bringing both points of view
+						together around a central application. Through this house-centric
+						application, citizens can:
+					<ul>
+						<li>Get a single, harmonised, view over all the governmental
+							data about the house</li>
+						<li>Provide additional restricted information</li>
+						<li>Control who gets access to the restricted information</li>
+					</ul>
+					<p>The implementation you are looking at right now is a first
+						prototype of such a "HuisKluis" focusing on Dutch houses</p>
+					<h2>What are the data sources ?</h2>
+					<p>The application uses all sort of external open data sets in
+						addition to its own internal restricted data set</p>
+					<p>At the moment, the following open data sets are in use:</p>
+					<ul>
+						<li>The Linked Open Data export from <a
+							href="http://netage.nl/en/">Netage.nl</a> of the <a
+							href="http://bag.vrom.nl/">basic registry of addresses and
+								building (BAG)</a></li>
+						<li>The map data from <a href="http://www.openstreetmap.org/">Open
+								Street Map</a></li>
+					</ul>
+					<h2>Can I use/trust the HuisKluis data ?</h2>
+					<p>
+						In short, <strong>no !</strong>. We implemented a basic security
+						system using e-mails as shared secret. Although the e-mail are
+						obtained through an OAuth2 authentication with the services from
+						Google+, they are used as non encrypted key with all communication
+						with the restricted data source. In addition, the harmonised data
+						generated for the application is using arbitrary vocabularies and
+						is likely to change a lot during further developments.
+					</p>
+					<p>You are advised to directly use the same open data the
+						HuisKluis uses, or use the data generated by the HuisKluis at your
+						own risk</p>
+					<h2>How does it work?</h2>
+					<p>The HuisKluis is implemented as two different parts, a
+						server and a client applications:</p>
+					<p>Server: the server implements a RESTful API that collect
+						data from various Open Data sources and combine them into an
+						harmonised data set (in RDF) about a given house. This server is
+						implemented in Java with the RestLet and Jena libraries, it runs
+						on the AppEngine platform from Google</p>
+					<p>
+						Client: the client is a Web application wrote in
+						HTML5/CSS3/Javascript using <a
+							href="http://twitter.github.io/bootstrap/index.html">Bootstrap</a>,
+						<a href="http://jquery.com/">JQuery</a> and <a
+							href="http://leafletjs.com/">Leaflet</a>. The application is
+						designed to work fine on any kind of Web-enabled device (desktop,
+						phone, tablet, ...) running modern Web browsers
+					</p>
+					<p>
+						The source code of both the server and client part are open source
+						and <a href="https://github.com/cgueret/HuisKluis">available
+							on GitHub</a>
+					</p>
+					<h2>Who is behind that ?</h2>
+					<p>
+						This application has been developed in the context of the <a
+							href="http://www.geonovum.nl/dossiers/linkedopendata">Pilot
+							Linked Open Data project</a> (see the <a
+							href="http://www.geonovum.nl/dossiers/linkedopendata/deelnemers">list
+							of participants</a>) with financial and R&amp;D support from the <a
+							href="http://www.networkinstitute.org/">Network Institute</a> of
+						the <a href="http://www.vu.nl/nl/index.asp">VU University of
+							Amsterdam</a> along with <a href="http://www.dans.knaw.nl/">Data
+							Archiving and Networking Services (DANS)</a>, an institute from the <a
+							href="http://www.knaw.nl/">Royal Netherlands Academy of
+							Sciences (KNAW)</a>.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.js"></script>
+	<script src="http://code.jquery.com/jquery.js"></script>
+	<script src='js/jquery.rdfquery.core.min-1.0.js'></script>
+	<script src="js/bootstrap.js"></script>
+	<!-- Google+ login button -->
+	<script src="https://apis.google.com/js/plusone.js"></script>
+	<script src="js/huiskluis.js"></script>
+	<script>
+		(function(i, s, o, g, r, a, m) {
+			i['GoogleAnalyticsObject'] = r;
+			i[r] = i[r] || function() {
+				(i[r].q = i[r].q || []).push(arguments)
+			}, i[r].l = 1 * new Date();
+			a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+			a.async = 1;
+			a.src = g;
+			m.parentNode.insertBefore(a, m)
+		})(window, document, 'script',
+				'//www.google-analytics.com/analytics.js', 'ga');
+
+		ga('create', 'UA-2853717-12', 'pilod-huiskluis.appspot.com');
+		ga('send', 'pageview');
+	</script>
+</body>
+</html>

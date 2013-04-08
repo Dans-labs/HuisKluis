@@ -58,6 +58,9 @@ function signinCallback(authResult) {
 	} else if (authResult['error']) {
 		// There was an error.
 		user_email = "";
+		
+		// Display the signin button again
+		$("#signinButton").show();
 	}
 }
 
@@ -324,7 +327,10 @@ function init() {
 	$.ajaxSetup({
 		datatype : "xml"
 	});
-
+	
+	// Hide the signin button until we get the data from Google+
+	$("#signinButton").hide();
+	
 	// Create the map
 	var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 	var osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors';
