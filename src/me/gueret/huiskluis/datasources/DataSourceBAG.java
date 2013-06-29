@@ -77,8 +77,6 @@ public class DataSourceBAG extends DataSource {
 					"?huis vocab:nummeraanduiding_huisnummertoevoeging \""
 							+ houseNumberToevoeging + "\"^^xsd:string.");
 		}
-		logger.info(query);
-		System.out.println(query);
 
 		// Execute it
 		// QueryExecution qexec = QueryExecutionFactory.sparqlService(
