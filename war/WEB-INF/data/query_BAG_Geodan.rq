@@ -7,7 +7,7 @@ PREFIX ogc: <http://lod.geodan.nl/geosparql_vocab_all.rdf#>
 SELECT ?straat ?bouwjaar ?point ?polygon WHERE {
 	?huis vocab:nummeraanduiding_postcode "{POSTCODE}"^^xsd:string.
 	?huis vocab:nummeraanduiding_huisnummer "{NUMMER}"^^xsd:string.
-	?huis vocab:nummeraanduiding_huisnummertoevoeging "{TOEVOEGING}"^^xsd:string.
+	{TOEVOEGING}
 	?huis vocab:openbareruimte ?obruimte.
 	?obruimte vocab:openbareruimte_naam ?straat.
 	?obj vocab:nummeraanduiding ?huis.
@@ -15,7 +15,7 @@ SELECT ?straat ?bouwjaar ?point ?polygon WHERE {
 	?pand vocab:verblijfsobject ?obj.
 	?pand vocab:pand_bouwjaar ?bouwjaar.
 	?pand ogc:WKTLiteral ?polygon.
-} ORDER BY  DESC(?point) DESC(?polygon) LIMIT 1
+} ORDER BY DESC(?point) DESC(?polygon) LIMIT 1
 
 # FILTER regex(str(?point), "^POINT", "i")
 # FILTER regex(str(?polygon), "^POLYGON", "i")

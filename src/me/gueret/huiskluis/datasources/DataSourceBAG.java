@@ -64,20 +64,30 @@ public class DataSourceBAG extends DataSource {
 	protected void getDataFromBart(Model model, Resource r, String postCode,
 			String houseNumber, String houseNumberToevoeging) {
 		// Compose the query
-		String query = new String(queryTemplates.get("Bart"));
+		String query = new String(queryTemplates.get("Geodan"));
 		query = query.replace("{POSTCODE}", postCode);
 		query = query.replace("{NUMMER}", houseNumber);
-		if (houseNumberToevoeging == null || houseNumberToevoeging.equals(""))
+		if (houseNumberToevoeging == null || houseNumberToevoeging.equals("")) {
 			query = query.replace("{TOEVOEGING}", "");
-		else
+		} else {
+			// query = query.replace("{TOEVOEGING}",
+			// "?huis <http://www.w3.org/ns/locn#locatorDesignator> \""
+			// + houseNumberToevoeging + "\".");
 			query = query.replace("{TOEVOEGING}",
-					"?huis <http://www.w3.org/ns/locn#locatorDesignator> \""
-							+ houseNumberToevoeging + "\".");
-		
+					"?huis vocab:nummeraanduiding_huisnummertoevoeging \""
+							+ houseNumberToevoeging + "\"^^xsd:string.");
+		}
+		logger.info(query);
+		System.out.println(query);
+
 		// Execute it
+		// QueryExecution qexec = QueryExecutionFactory.sparqlService(
+		// "http://data.resc.info/bag/sparql", query);
 		QueryExecution qexec = QueryExecutionFactory.sparqlService(
-				"http://data.resc.info/bag/sparql", query);
+				"http://lod.geodan.nl/BAG/sparql", query);
+
 		ResultSet results = qexec.execSelect();
+		qexec.setTimeout(0);
 
 		Property p;
 		if (results.hasNext()) {
@@ -92,19 +102,38 @@ public class DataSourceBAG extends DataSource {
 					.createProperty("http://www.example.org#construction");
 			model.add(r, p, result.get("bouwjaar"));
 
+			String a = result.get("point").toString();
+			a = a.replace(
+					")^^http://lod.geodan.nl/geosparql_vocab_all.rdf#WKTLiteral",
+					"");
+			a = a.replace("POINT(", "");
+			String[] pp = a.split(" ");
+
 			// Add the latitude
 			p = ResourceFactory
 					.createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
 			Literal lat = ResourceFactory.createTypedLiteral(Float
-					.valueOf(result.get("lat").toString()));
+					.valueOf(pp[1]));
 			model.add(r, p, lat);
 
 			// Add the longitude
 			p = ResourceFactory
 					.createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#long");
 			Literal lng = ResourceFactory.createTypedLiteral(Float
-					.valueOf(result.get("lng").toString()));
+					.valueOf(pp[0]));
 			model.add(r, p, lng);
+
+			/*
+			 * // Add the latitude p = ResourceFactory
+			 * .createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
+			 * Literal lat = ResourceFactory.createTypedLiteral(Float
+			 * .valueOf(result.get("lat").toString())); model.add(r, p, lat);
+			 * 
+			 * // Add the longitude p = ResourceFactory
+			 * .createProperty("http://www.w3.org/2003/01/geo/wgs84_pos#long");
+			 * Literal lng = ResourceFactory.createTypedLiteral(Float
+			 * .valueOf(result.get("lng").toString())); model.add(r, p, lng);
+			 */
 
 			// Add the polygon
 			p = ResourceFactory
