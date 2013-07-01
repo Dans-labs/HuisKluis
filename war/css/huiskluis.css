@@ -66,4 +66,8 @@ body {
 	top: -1px;
 }
 
-
+.carousel .item > img {
+    display: block;
+    line-height: 1;
+    margin: 0 auto;
+}
