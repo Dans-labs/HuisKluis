@@ -1,0 +1,20 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX vocab: <http://lod.geodan.nl/BAG/vocab/resource/>
+PREFIX ogc: <http://lod.geodan.nl/geosparql_vocab_all.rdf#>
+
+SELECT ?point ?polygon WHERE {
+	?huis vocab:nummeraanduiding_postcode "{POSTCODE}"^^xsd:string.
+	?huis vocab:nummeraanduiding_huisnummer "{NUMMER}"^^xsd:string.
+	{TOEVOEGING}
+	?obj vocab:nummeraanduiding ?huis.
+	?pand vocab:verblijfsobject ?obj.
+	?obj ogc:WKTLiteral ?point.
+	?pand ogc:WKTLiteral ?polygon.
+} ORDER BY DESC(?point) DESC(?polygon) LIMIT 1
+
+# FILTER regex(str(?point), "^POINT", "i")
+# FILTER regex(str(?polygon), "^POLYGON", "i")
+
+	

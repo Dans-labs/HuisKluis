@@ -26,7 +26,7 @@
 				</a>
 
 				<!-- Branding -->
-				<a class="brand" href="/">HuisKluis<sup>0.1</sup>
+				<a class="brand" href="/">HuisKluis<sup>0.2</sup>
 				</a>
 				<ul class="nav">
 					<li class="active"><a href="/">Home</a></li>
@@ -35,23 +35,17 @@
 
 				<!-- Everything that will be collapsed on small screens -->
 				<div class="nav-collapse collapse">
-					<form class="navbar-form pull-left">
-						<input id="postcode" name="postcode" type="text"
-							class="input-small" placeholder="postcode" /> <input id="number"
-							name="number" type="text" class="input-small"
-							placeholder="number" />
-						<button type="submit" class="btn btn-primary">Go!</button>
-					</form>
-					<span style="padding-top: 4px; margin: 0px; line-height: 0px;"
-						id="signinButton" class="pull-right"> <span
-						class="g-signin" data-callback="signinCallback"
-						data-clientid="413533605905.apps.googleusercontent.com"
-						data-cookiepolicy="single_host_origin" data-width="wide"
-						data-scope="https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email">
+					<span id="form-top" style="display: none;">
+						<form class="navbar-form pull-left">
+							<input id="postcode" name="postcode" type="text"
+								class="input-small" placeholder="postcode" /> <input
+								id="number" name="number" type="text" class="input-small"
+								placeholder="number" />
+							<button type="submit" class="btn btn-primary">Go!</button>
+						</form> <a href="#myModal" id="switchButton" role="button"
+						class="btn btn-danger pull-right" data-toggle="modal">Enable
+							private mode</a>
 					</span>
-					</span> <a id="logoutButton" class="btn btn-success pull-right"
-						style="display: none;" onclick="javascript:disconnectUser()">Log
-						out</a>
 				</div>
 			</div>
 		</div>
@@ -62,96 +56,127 @@
 	<br />
 
 	<!-- Main container -->
-	<div class="container">
-		<div class="row">
-			<div class="span12">
-				<div class="well">
-					<!-- Welcome panel -->
-					<div id="welcome">
-						<a href='/'><img id='logo' src='img/backup-vault.png'
-							style="float: left; height: 150px; padding-right: 20px;" /></a>
-						<h1>Welcome on the HuisKluis !</h1>
-						<p>This is a place to get and provide information about your
-							house. Enter your house postcode and number in the navigation bar
-							and press "Go"</p>
-						<br /> <br /> <br /> <br />
-						<p>If you prefer, you can also go to the following examples:</p>
-						<ul>
-							<li><a href="index.html?postcode=1055HB&number=20-3">A
-									house (1055HB 20-3)</a></li>
-							<li><a href="index.html?postcode=7231JT&number=24">Another
-									house (7231JT 24)</a></li>
-							<li><a href="index.html?postcode=1081HV&number=1105">The
-									main building of the VU University Amsterdam (1081HV 1105)</a></li>
-							<li><a href="index.html?postcode=1012RJ&number=147">Royal
-									Palace at Dam Square (1012RJ 147)</a></li>
-							<li><a href="index.html?postcode=1012NL&number=17">Nieuwe
-									Kerk (1012NL 17)</a></li>
-						</ul>
-					</div>
-					<!-- Progress bar -->
-					<div id="progress" class="progress progress-striped active"
-						style="display: none;">
-						<div class="bar" style="width: 100%;">Loading</div>
-					</div>
-					<!-- Error box -->
-					<div id="error" class="alert alert-error"
-						style="display: none; width: 80%">Sorry, the server took too
-						long to respond. Try again later</div>
-					<!-- Information panel showed when some data is loaded -->
-					<div id="house" style="display: none;">
-						<h1>
-							Information available for this house <a href="#"
-								style="margin-top: 10px" class="btn btn-primary pull-right"
-								id="rdflink">Get the RDF data</a>
-						</h1>
-						<div class="boxed-public">
-							<p class="muted">This section contains a collection of open
-								data relevant for this house. The data has been harvested from
-								different locations and put together as one data set. To see
-								this data as RDF, click on the blue button on the upper right
-								corner.</p>
-							<div class="pull-left">
-								<table class="table table-bordered">
-									<tr>
-										<td><p>Construction year</p></td>
-										<td id="bouwjaar"></td>
-									</tr>
-									<tr>
-										<td><p>Street name</p></td>
-										<td id="straat"></td>
-									</tr>
-								</table>
-							</div>
-							<div id="map" class="map pull-right"></div>
-							<div class="clearfix"></div>
-						</div>
-						<div class="boxed-private">
-							<p class="muted">This section contains restricted data
-								relevant for this house. The access to this data is restricted
-								to the person who claimed the location and the applications this
-								persons has granted access to.</p>
-							<div class="pull-left" id="private-div"></div>
-							<div class="clearfix"></div>
-						</div>
-					</div>
+	<div id="welcomepage" class="container">
+		<!-- The welcome page with the video and the search form -->
+		<div class="row" class="span12">
+			<img src="img/logo.png" width="100px"></img>
+			<div class="row">
+				<div class="boxed span4">
+					<p>Look at the following video to get more information</p>
+					<iframe
+						src="http://player.vimeo.com/video/68485118?title=0&amp;byline=0&amp;portrait=0"
+						width="100%" frameborder="0" webkitAllowFullScreen
+						mozallowfullscreen allowFullScreen></iframe>
+				</div>
+				<div class="boxed span4 offset4">
+					<p>Get started</p>
+					<form class="navbar-form pull-left">
+						<input id="postcode" name="postcode" type="text"
+							class="input-small" placeholder="postcode" /> <input id="number"
+							name="number" type="text" class="input-small"
+							placeholder="number" />
+						<button type="submit" class="btn btn-primary">Go!</button>
+					</form>
+					<br /> <br />
+					<p>If you prefer, you can also go to the following examples:</p>
+					<ul>
+						<li><a href="index.html?postcode=1055HB&number=20-3">A
+								house (1055HB 20-3)</a></li>
+						<li><a href="index.html?postcode=7231JT&number=24">Another
+								house (7231JT 24)</a></li>
+						<li><a href="index.html?postcode=1081HV&number=1105">The
+								main building of the VU University Amsterdam (1081HV 1105)</a></li>
+						<li><a href="index.html?postcode=1012RJ&number=147">Royal
+								Palace at Dam Square (1012RJ 147)</a></li>
+						<li><a href="index.html?postcode=1012NL&number=17">Nieuwe
+								Kerk (1012NL 17)</a></li>
+					</ul>
 				</div>
 			</div>
 		</div>
-		<div class="footer">
-			<p class="text-right">Copyright &copy; 2013, Christophe
-				Gu&eacute;ret, DANS (KNAW)/Pilot Linked Open Data project</p>
+	</div>
+
+	<!-- The page showing information about the house -->
+	<div id="housepage" class="container">
+		<div class="row">
+			<div class="boxed-public span4 offset1">
+				<br />
+				<p>
+					Images from <a href="http://beeldbank.amsterdam.nl/">http://beeldbank.amsterdam.nl/</a>
+				</p>
+				<div id="myCarousel" class="carousel slide">
+					<!-- Carousel items -->
+					<div class="carousel-inner" id="carousel-content"></div>
+					<!-- Carousel nav -->
+					<a class="carousel-control left" href="#myCarousel"
+						data-slide="prev">&lsaquo;</a> <a class="carousel-control right"
+						href="#myCarousel" data-slide="next">&rsaquo;</a>
+				</div>
+			</div>
+			<div class="boxed-public span4 offset1">
+				<div id="map" class="map pull-right"></div>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="boxed-public span4 offset1" id="dataWidget">
+				<br />
+				<p>General information</p>
+				<table class="table table-bordered">
+					<tr>
+						<td>Construction year</td>
+						<td id="bouwjaar"></td>
+					</tr>
+					<tr>
+						<td>Street name</td>
+						<td id="straat"></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<br />
+		</div>
+		<div class="row">
+			<div class="boxed-private span4 offset1 hide" id="commentWidget">
+				<br />
+				<p>Put here a confidential comment only visible in private mode</p>
+				<textarea class="editor" id="textComment"></textarea>
+				<span id="ajaxFired"></span>
+			</div>
 		</div>
 	</div>
 
+	<!-- Dialog -->
+	<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true">&times;</button>
+			<h3>Enable private mode</h3>
+		</div>
+		<div class="modal-body">
+			<p class="text-info">In private mode, it becomes possible to see
+				and edit private data. To let you in we need to be sure you are the
+				owner of this house, please enter the code you received by postal
+				mail</p>
+			<input id="privateCode" name="privateCode" type="text"
+				class="input-small" placeholder="privateCode" /> <br />
+			<p class="muted">PS: during the beta phase of this site, the code
+				is "1234" for all the houses ;-)</p>
+		</div>
+		<div class="modal-footer">
+			<a href="#" class="btn btn-primary" onclick="checkPrivateCode();">Go!</a>
+		</div>
+	</div>
 
-
+	<!-- Javascript -->
 	<script src="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.js"></script>
 	<script src="http://code.jquery.com/jquery.js"></script>
 	<script src='js/jquery.rdfquery.core.min-1.0.js'></script>
 	<script src="js/bootstrap.js"></script>
-	<!-- Google+ login button -->
-	<script src="https://apis.google.com/js/plusone.js"></script>
+	<!-- From http://zurb.com/playground/jquery-text-change-custom-event -->
+	<script src="js/jquery.textchange.min.js"></script>
 	<script src="js/huiskluis.js"></script>
 	<script>
 		(function(i, s, o, g, r, a, m) {

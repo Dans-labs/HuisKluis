@@ -1,5 +1,5 @@
 body {
-	background-image: url('../img/bg.png');
+	background-color: #e95d0f;
 }
 
 .shadowed {
@@ -9,14 +9,31 @@ body {
 }
 
 #map {
-	width: 320px;
+	width: 100%;
 	height: 240px;
+}
+
+
+.boxed {
+	background-color: #FFFFFF;
+	border: 1px solid #DDDDDD;
+	box-shadow: 2px 2px 2px #888;
+	padding:5px;
+	position: relative;
+}
+
+.boxed-public {
+	background-color: #FFFFFF;
+	border: 1px solid #DDDDDD;
+	box-shadow: 2px 2px 2px #888;
+	padding:5px;
+	position: relative;
 }
 
 .boxed-public:after {
 	background-color: #F5F5F5;
 	border: 1px solid #DDDDDD;
-	border-radius: 4px 0 4px 0;
+	border-radius: 0 0 4px 0;
 	color: #9DA0A4;
 	content: "Public data";
 	font-size: 12px;
@@ -27,12 +44,11 @@ body {
 	top: -1px;
 }
 
-.boxed-public {
+.boxed-private {
 	background-color: #FFFFFF;
 	border: 1px solid #DDDDDD;
-	border-radius: 4px 4px 4px 4px;
-	margin: 15px 0;
-	padding: 39px 19px 14px;
+	box-shadow: 2px 2px 2px #888;
+	padding:5px;
 	position: relative;
 }
 
@@ -50,11 +66,4 @@ body {
 	top: -1px;
 }
 
-.boxed-private {
-	background-color: #FFFFFF;
-	border: 1px solid #DDDDDD;
-	border-radius: 4px 4px 4px 4px;
-	margin: 15px 0;
-	padding: 39px 19px 14px;
-	position: relative;
-}
+
