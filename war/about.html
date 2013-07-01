@@ -32,27 +32,6 @@
 					<li><a href="/">Home</a></li>
 					<li class="active"><a href="about.html">About</a></li>
 				</ul>
-
-				<!-- Everything that will be collapsed on small screens -->
-				<div class="nav-collapse collapse">
-					<form class="navbar-form pull-left">
-						<input id="postcode" name="postcode" type="text"
-							class="input-small" placeholder="postcode" /> <input id="number"
-							name="number" type="text" class="input-small"
-							placeholder="number" />
-						<button type="submit" class="btn btn-primary">Go!</button>
-					</form>
-					<span style="padding-top: 4px; margin: 0px; line-height: 0px;"
-						id="signinButton" class="pull-right"> <span
-						class="g-signin" data-callback="signinCallback"
-						data-clientid="413533605905.apps.googleusercontent.com"
-						data-cookiepolicy="single_host_origin" data-width="wide"
-						data-scope="https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email">
-					</span>
-					</span> <a id="logoutButton" class="btn btn-success pull-right"
-						style="display: none;" onclick="javascript:disconnectUser()">Log
-						out</a>
-				</div>
 			</div>
 		</div>
 	</div>
@@ -178,12 +157,8 @@
 		alt="Fork me on GitHub"></a>
  -->
 
-	<script src="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.js"></script>
 	<script src="http://code.jquery.com/jquery.js"></script>
-	<script src='js/jquery.rdfquery.core.min-1.0.js'></script>
 	<script src="js/bootstrap.js"></script>
-	<!-- Google+ login button -->
-	<script src="https://apis.google.com/js/plusone.js"></script>
 	<script src="js/huiskluis.js"></script>
 	<script>
 		(function(i, s, o, g, r, a, m) {
