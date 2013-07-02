@@ -1,70 +1,55 @@
-// Namespaces
-var ns = {
-	ont : 'http://linkeddata.few.vu.nl/ontology.owl#',
-	geo : 'http://www.geonames.org/ontology#',
-	wgs84 : 'http://www.w3.org/2003/01/geo/wgs84_pos#',
-	owl : 'http://www.w3.org/2002/07/owl#',
-	dbpedia : 'http://dbpedia.org/resource/',
-	rdfs : 'http://www.w3.org/2000/01/rdf-schema#',
-	pilod : 'http://www.example.org#'
-}
-
-// The current house post code and number
-var postCode = null;
-var number = null;
-
 // A pointer to the map
 var map = null;
+var marker = null;
+var layer = null;
 
-// Private mode ?
-var privateMode = 0;
+// Time out for the editor
+var timeout = null;
 
-var timeout;
+// Private mode code
+var code = null;
 
 // When everything is ready, call init
 $().ready(init);
-
-// Code from
-// http://jquerybyexample.blogspot.com/2012/06/get-url-parameters-using-jquery.html
-function GetURLParameter(sParam) {
-	var sPageURL = window.location.search.substring(1);
-	var sURLVariables = sPageURL.split('&');
-	for ( var i = 0; i < sURLVariables.length; i++) {
-		var sParameterName = sURLVariables[i].split('=');
-		if (sParameterName[0] == sParam)
-			return sParameterName[1];
-	}
-	;
-}
 
 /**
  * Check if the code for the house is ok
  */
 function checkPrivateCode() {
 	$('#myModal').modal('hide');
-	
-	privateMode = 0;
+	code = $("#privateCode").val();
 
-	if ($("#privateCode").val() == '1234') {
-		privateMode = 1;
+	if (isPrivateMode()) {
 		$("#switchButton").hide();
-	}
+
+		// (re)load the comment widget
+		loadCommentWidget();
 		
-	// Load the comment widget
-	loadCommentWidget(identifier);
+		// show energy widget
+		$("#sensorWidget").show();
+	}
 }
 
 /**
  * Map widget, shows the contour of the building on the map
  */
-function loadMapWidget(identifier) {
+function loadMapWidget() {
+	var identifier = getIdentifier();
+
+	// Clean the map
+	if (layer != null)
+		map.removeLayer(layer);
+	if (marker != null)
+		map.removeLayer(marker);
+
 	$.ajax({
 		url : "http://" + window.location.host + "/widget/map/" + identifier,
 		success : function(json) {
 			// Set the marker
 			var la = json.lat;
 			var lo = json.long;
-			L.marker([ parseFloat(la), parseFloat(lo) ]).addTo(map);
+			marker = L.marker([ parseFloat(la), parseFloat(lo) ])
+			marker.addTo(map);
 			map.setView([ parseFloat(la), parseFloat(lo) ], 16);
 
 			// Add the polygon
@@ -77,9 +62,10 @@ function loadMapWidget(identifier) {
 				point.push(parseFloat(match[1]));
 				points.push(point);
 			}
-			var polygon = L.polygon(points, {
+			layer = L.polygon(points, {
 				color : 'red'
-			}).addTo(map);
+			})
+			layer.addTo(map);
 		},
 		error : function() {
 		},
@@ -89,12 +75,15 @@ function loadMapWidget(identifier) {
 /**
  * Photos widget
  */
-function loadPhotosWidget(identifier) {
+function loadPhotosWidget() {
+	var identifier = getIdentifier();
+
 	$("#myCarousel").hide();
 	$("#carousel-content").empty();
 	$.ajax({
 		url : "http://" + window.location.host + "/widget/photo/" + identifier,
 		success : function(json) {
+			var count = 0;
 			$.each(json.images, function(index, value) {
 				var div = $("<div/>").attr('class',
 						'item' + (index == 1 ? ' active' : ''));
@@ -102,8 +91,10 @@ function loadPhotosWidget(identifier) {
 						'img-polaroid');
 				img.appendTo(div);
 				div.appendTo($("#carousel-content"));
+				count = count + 1;
 			});
-			$("#myCarousel").show();
+			if (count > 0)
+				$("#myCarousel").show();
 		},
 		error : function() {
 		},
@@ -113,7 +104,8 @@ function loadPhotosWidget(identifier) {
 /**
  * Data widget, shows basic information
  */
-function loadDataWidget(identifier) {
+function loadDataWidget() {
+	var identifier = getIdentifier();
 	$("#dataWidget").hide();
 	$("#bouwjaar").empty();
 	$("#straat").empty();
@@ -132,19 +124,19 @@ function loadDataWidget(identifier) {
 /**
  * Data widget, shows basic information
  */
-function loadCommentWidget(identifier) {
+function loadCommentWidget() {
+	var identifier = getIdentifier();
 	$("#commentWidget").hide();
 	$("#comment").empty();
 	$("#textComment").text("");
 
-	if (privateMode == 0)
+	if (!isPrivateMode())
 		return;
 
 	$.ajax({
 		url : "http://" + window.location.host + "/widget/comment/"
 				+ identifier,
 		success : function(json) {
-			console.log(json.comment);
 			$("#textComment").html(json.comment);
 			$("#commentWidget").show();
 		},
@@ -156,25 +148,37 @@ function loadCommentWidget(identifier) {
 /**
  * Display the relevant information for a house
  */
-function displayHouse(postCode, number) {
-	privateMode = 0;
-	
+function displayHouse() {
+	var State = History.getState();
+	var postCode = State.data['postCode'];
+	var number = State.data['number'];
+
 	// Fill in the form in the navigation bar
-	$('#postcode').attr('placeholder', postCode).val(postCode);
-	$('#number').attr('placeholder', number).val(number);
-	identifier = postCode + '-' + number;
+	$('#formTopPostCode').attr('placeholder', postCode).val(postCode);
+	$('#formTopNumber').attr('placeholder', number).val(number);
+	var identifier = postCode + '-' + number;
 
-	// Load the mapWidget
-	loadMapWidget(identifier);
+	if (identifier == 'undefined-undefined') {
+		$("#housepage").hide();
+		$("#form-top").hide();
+		$("#welcomepage").show();
+	} else {
+		$("#welcomepage").hide();
+		$("#housepage").show();
+		$("#form-top").show();
 
-	// Load the photosWidget
-	loadPhotosWidget(identifier);
+		// Load the mapWidget
+		loadMapWidget();
 
-	// Load the dataWidget
-	loadDataWidget(identifier);
+		// Load the photosWidget
+		loadPhotosWidget();
 
-	// Load the comment widget
-	loadCommentWidget(identifier);
+		// Load the dataWidget
+		loadDataWidget();
+
+		// Load the comment widget
+		loadCommentWidget();
+	}
 }
 
 /**
@@ -184,6 +188,11 @@ function init() {
 	// Configure Ajax queries
 	$.ajaxSetup({
 		datatype : "json"
+	});
+
+	// Bind to StateChange Event of the history
+	History.Adapter.bind(window, 'statechange', function() {
+		displayHouse();
 	});
 
 	// Create the map
@@ -206,8 +215,8 @@ function init() {
 					$.ajax({
 						method : "PUT",
 						url : "http://" + window.location.host
-								+ "/widget/comment/" + identifier + "?comment="
-								+ $(self).val(),
+								+ "/widget/comment/" + getIdentifier()
+								+ "?comment=" + $(self).val(),
 						success : function() {
 							$('#ajaxFired').html(
 									'<p class="muted">Changes saved !</p>');
@@ -216,27 +225,82 @@ function init() {
 				}, 1000);
 			});
 
-	// $(".editor").jqte({
-	// change : function() {
-	// console.log($("#textComment").text());
-	// }
-	// });
+	var State = History.getState();
+	var postCode = '' + State.data['postCode'];
+	var number = '' + State.data['number'];
 
-	// Get the parameters for the house
-	postCode = GetURLParameter('postcode');
-	number = GetURLParameter('number');
-
-	if (postCode != null && number != null && postCode != '' && number != '') {
+	if (postCode != 'undefined' && number != 'undefined') {
 		// Adapt the view
 		$("#welcomepage").hide();
 		$("#housepage").show();
 		$("#form-top").show();
 
 		// Display the house
-		displayHouse(postCode, number);
+		displayHouse();
 	} else {
 		$("#housepage").hide();
 		$("#welcomepage").show();
 	}
 
+}
+
+/*
+ * Is private mode enabled ?
+ */
+function isPrivateMode() {
+	// No code ?
+	if (code == null)
+		return false;
+
+	// Check the code
+	return (code == '1234');
+}
+
+/*
+ * Get the identifier of the current house
+ */
+function getIdentifier() {
+	var State = History.getState();
+	var postCode = State.data['postCode'];
+	var number = State.data['number'];
+	return postCode + '-' + number;
+}
+
+/*
+ * Forces the loading of another house
+ */
+function switchToHouse(postCode, number) {
+	// Adapt the view
+	$("#welcomepage").hide();
+	$("#housepage").show();
+	$("#form-top").show();
+
+	// Get the current state to see if the code is there
+	var State = History.getState();
+	var code = '' + State.data['code'];
+
+	// Push new status
+	var url = "?postCode=" + postCode + "&number=" + number;
+	var title = "House " + postCode + '-' + number;
+	if (code == 'undefined') {
+		History.pushState({
+			postCode : postCode,
+			number : number
+		}, title, url);
+	} else {
+		History.pushState({
+			postCode : postCode,
+			number : number,
+			code : code
+		}, title, url + "&code=" + code);
+	}
+}
+
+/*
+ * A form has been used to query for the new house
+ */
+function switchFromForm(form) {
+	var postCode = form[0].postCode.value;
+	var number = form[0].number.value;
+	switchToHouse(postCode, number);
 }
